@@ -7,37 +7,40 @@ This project demonstrates how to set up a complete CI/CD pipeline for a Node.js 
 
 The project is organized into the following directory structure:
 
+## 📁 Project Structure
+
+```bash
 .
 ├── infrstructure_using_terraform
-│ ├── amidata.tf
-│ ├── backend.tf
-│ ├── compute_resources.tf
-│ ├── Jenkinsfile
-│ ├── main.tf
-│ ├── network
-│ │ ├── internetgw.tf
-│ │ ├── natgateway.tf
-│ │ ├── output.tf
-│ │ ├── routetables.tf
-│ │ ├── subnets.tf
-│ │ ├── variables.tf
-│ │ └── vpc.tf
-│ ├── output.tf
-│ ├── README.md
-│ ├── secrets.tf
-│ ├── securitygroups.tf
-│ └── variables.tf
+│   ├── amidata.tf
+│   ├── backend.tf
+│   ├── compute_resources.tf
+│   ├── Jenkinsfile
+│   ├── main.tf
+│   ├── network
+│   │   ├── internetgw.tf
+│   │   ├── natgateway.tf
+│   │   ├── output.tf
+│   │   ├── routetables.tf
+│   │   ├── subnets.tf
+│   │   ├── variables.tf
+│   │   └── vpc.tf
+│   ├── output.tf
+│   ├── README.md
+│   ├── secrets.tf
+│   ├── securitygroups.tf
+│   └── variables.tf
 ├── Jenkinsfile
 └── simple_nodejs_application
-├── ansible.cfg
-├── deploy_node_app.yml
-├── dockerfile
-├── host_vars
-│ └── node_app.yml
-├── inventory
-└── nodeapp
-├── app.js
-└── package.json
+    ├── ansible.cfg
+    ├── deploy_node_app.yml
+    ├── dockerfile
+    ├── host_vars
+    │   └── node_app.yml
+    ├── inventory
+    └── nodeapp
+        ├── app.js
+        └── package.json
 
 ### Directories and Their Roles:
 - **infrastructure_using_terraform**: Contains Terraform files that define and provision the AWS infrastructure (VPC, EC2, Security Groups, NAT Gateway, and more).
@@ -56,16 +59,14 @@ The project is organized into the following directory structure:
    terraform init
 Apply the Terraform configuration to provision the required AWS resources:
 
-terraform apply --var-file=dev.tfvars
+   ```bash
+   terraform apply --var-file=dev.tfvars
+
 This will create:
-
-VPC with subnets.
-
-EC2 instances (public and private).
-
-NAT Gateway for outbound internet access from private instances.
-
-Security groups, route tables, and internet gateway for networking.
+1-VPC with subnets.
+2-EC2 instances (public and private).
+3-NAT Gateway for outbound internet access from private instances.
+4-Security groups, route tables, and internet gateway for networking.
 
 ### Step 2: Set up Jenkins Pipeline
 
