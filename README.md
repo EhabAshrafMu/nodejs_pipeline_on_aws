@@ -68,7 +68,15 @@ This will create:
 3. NAT Gateway for outbound internet access from private instances.
 4. Security groups, route tables, and internet gateway for networking.
 
-### Step 2: Set up Jenkins Pipeline
+### Step 2: Configure our servers using Ansible.
+# we can further automate this process also but we will manually configure this.
+1. Update the variables to include the private ip and the public ip of the servers and reference the generated private key.
+2. Run the playbook:
+  ```bash
+   ansible-playbook -i inventory deploy_node_app.yml
+   ```
+
+### Step 3: Set up Jenkins Pipeline
 
 # Jenkins Pipeline for Node.js Application Deployment
 
