@@ -1,4 +1,4 @@
-# Node.js CI/CD Pipeline on AWS using Terraform, Ansible, Jenkins, and Docker
+# 🚀 Node.js CI/CD Pipeline on AWS using Terraform, Ansible, Jenkins, and Docker 🚀
 This project is for learning purposes only.
 
 This project demonstrates how to set up a complete CI/CD pipeline for a Node.js application on AWS using several DevOps tools and services. The project includes infrastructure provisioning with Terraform, configuration management with Ansible, continuous integration and deployment with Jenkins, and containerization using Docker.
