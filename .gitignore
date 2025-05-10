@@ -1,0 +1,13 @@
+# Ignore the .terraform directory where provider binaries are stored
+.terraform/
+
+# Ignore Terraform lock files
+.terraform.lock.hcl
+
+# Ignore Terraform state files (these are sensitive and should never be committed)
+terraform.tfstate
+terraform.tfstate.backup
+
+# Ignore any other sensitive or temporary files Terraform generates
+*.tfvars
+*.tfvars.json

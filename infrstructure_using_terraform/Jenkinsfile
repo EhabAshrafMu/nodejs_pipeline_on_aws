@@ -1,0 +1,124 @@
+pipeline {
+    agent any
+    
+    // Configure triggers to respond to application code changes
+    triggers {
+        // Poll SCM every 5 minutes for changes
+        pollSCM('H/5 * * * *')
+    }
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws-access-key')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-key')
+        AWS_DEFAULT_REGION    = 'us-east-1'
+        // Add path to terraform if not in default PATH
+        PATH                  = "${env.PATH}:/usr/local/bin"
+        // Add variables for tracking state and workspace
+        TF_WORKSPACE          = "dev"
+        TF_VAR_FILE           = "environments/dev.tfvars"
+        // Add app info to track which application triggered the change
+        APP_NAME              = "${env.APP_NAME}"
+        // Add variable to control output verbosity
+        TF_LOG                = "INFO"
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Clean workspace before checkout
+                cleanWs()
+                // Checkout infrastructure code
+                checkout scm
+            }
+        }
+        
+        stage('Terraform Init') {
+            steps {
+                // Initialize Terraform with proper backend configuration
+                sh 'terraform init -reconfigure'
+            }
+        }
+
+        stage('Terraform Format Check') {
+            steps {
+                // Check formatting of terraform code
+                sh 'terraform fmt -check -recursive'
+            }
+        }
+
+        stage('Terraform Validate') {
+            steps {
+                // Validate terraform code
+                sh 'terraform validate'
+            }
+        }
+
+        stage('Terraform Plan') {
+            steps {
+                // Create and save plan
+                sh 'terraform plan -var-file="${TF_VAR_FILE}" -out=tfplan'
+                // Display the plan in the console
+                sh 'terraform show -no-color tfplan > tfplan.txt'
+                // Archive the plan for review
+                archiveArtifacts artifacts: 'tfplan.txt', allowEmptyArchive: true
+            }
+        }
+
+        stage('Review Changes') {
+            steps {
+                // Have a human review the changes
+                input message: 'Review the terraform plan. Do you want to apply these changes?', ok: 'Apply'
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps {
+                // Apply the saved plan
+                sh 'terraform apply -auto-approve tfplan'
+            }
+        }
+        
+        stage('Extract Outputs') {
+            steps {
+                // Output terraform output variables for use in other pipelines
+                sh 'terraform output -json > tf_outputs.json'
+                archiveArtifacts artifacts: 'tf_outputs.json', allowEmptyArchive: true
+                
+                // Extract specific outputs if needed for application deployment
+                script {
+                    def outputs = readJSON file: 'tf_outputs.json'
+                    // Example of extracting EC2 instance IPs
+                    env.EC2_PRIVATE_IP = outputs.private_ec2_ip?.value
+                    env.BASTION_HOST_IP = outputs.bastion_host_ip?.value
+                    
+                    // Save these to a file for later use
+                    writeFile file: 'infrastructure_outputs.txt', text: "EC2_PRIVATE_IP=${env.EC2_PRIVATE_IP}\nBASTION_HOST_IP=${env.BASTION_HOST_IP}"
+                    archiveArtifacts artifacts: 'infrastructure_outputs.txt', allowEmptyArchive: true
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Infrastructure provisioning succeeded!'
+            // Trigger application deployment pipeline if needed
+            build job: 'deploy-nodejs-app', parameters: [
+                string(name: 'EC2_PRIVATE_IP', value: "${env.EC2_PRIVATE_IP}"),
+                string(name: 'BASTION_HOST_IP', value: "${env.BASTION_HOST_IP}")
+            ], wait: false
+        }
+        
+        failure {
+            echo 'Infrastructure provisioning failed!'
+            // Send notifications
+        }
+        
+        always {
+            // Archive terraform files and state files
+            archiveArtifacts artifacts: '**/*.tf, **/*.tfvars, **/*.tfstate*', allowEmptyArchive: true
+            // Clean workspace
+            cleanWs(patterns: [[pattern: '**/.terraform/**', type: 'EXCLUDE']])
+        }
+    }
+}

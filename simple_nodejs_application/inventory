@@ -1,0 +1,1 @@
+app_node ansible_host={{ app_private_ip }} ansible_user={{ ansible_user }} ansible_ssh_private_key_file={{ private_key_path }} ansible_ssh_common_args='-o ProxyCommand="ssh -W %h:%p -q {{ bastion_user }}@{{ bastion_public_ip }} -i {{ private_key_path }}"'

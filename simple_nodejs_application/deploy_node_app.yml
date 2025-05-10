@@ -1,0 +1,61 @@
+---
+- name: Deploy Node.js application in Docker
+  hosts: app
+  become: true
+
+  vars:
+    app_dir: /opt/nodeapp
+    docker_image_name: nodeapp
+    docker_container_name: nodeapp_container
+
+  tasks:
+    - name: Install required packages
+      yum:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - docker
+        - git
+
+    - name: Start and enable Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add ec2-user to docker group
+      user:
+        name: "{{ ansible_user }}"
+        groups: docker
+        append: yes
+
+    - name: Copy application directory
+      copy:
+        src: ./nodeapp/
+        dest: "{{ app_dir }}"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0755'
+
+    - name: Copy Dockerfile
+      copy:
+        src: ./Dockerfile
+        dest: "{{ app_dir }}/Dockerfile"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        mode: '0644'
+
+    - name: Build Docker image
+      community.docker.docker_image:
+        name: "{{ docker_image_name }}"
+        build:
+          path: "{{ app_dir }}"
+
+    - name: Run Docker container
+      community.docker.docker_container:
+        name: "{{ docker_container_name }}"
+        image: "{{ docker_image_name }}"
+        state: started
+        restart_policy: always
+        ports:
+          - "3000:3000"

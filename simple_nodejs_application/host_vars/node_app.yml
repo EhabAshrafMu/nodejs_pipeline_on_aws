@@ -1,0 +1,6 @@
+# host_vars/app_node.yml
+app_private_ip: 10.0.2.199
+ansible_user: ubuntu
+bastion_user: ubuntu
+bastion_public_ip: 52.207.154.142
+private_key_path: ~/.ssh/your_key.pem
