@@ -41,7 +41,7 @@ The project is organized into the following directory structure:
     └── nodeapp
         ├── app.js
         └── package.json
-
+```
 ### Directories and Their Roles:
 - **infrastructure_using_terraform**: Contains Terraform files that define and provision the AWS infrastructure (VPC, EC2, Security Groups, NAT Gateway, and more).
 - **simple_nodejs_application**: Contains the Node.js application along with Ansible playbooks for deploying the application to EC2 instances.
