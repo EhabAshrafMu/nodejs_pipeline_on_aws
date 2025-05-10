@@ -61,7 +61,6 @@ Apply the Terraform configuration to provision the required AWS resources:
 
    ```bash
    terraform apply --var-file=dev.tfvars
-
 This will create:
 1-VPC with subnets.
 2-EC2 instances (public and private).
