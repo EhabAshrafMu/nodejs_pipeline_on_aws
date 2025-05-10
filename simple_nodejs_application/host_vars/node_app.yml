@@ -1,6 +1,6 @@
-# host_vars/app_node.yml
-app_private_ip: 10.0.2.199
+# We should utilize Ansible vaults here to keep the information confedntials
+app_private_ip: <private EC2 ip>
 ansible_user: ubuntu
 bastion_user: ubuntu
-bastion_public_ip: 52.207.154.142
-private_key_path: ~/.ssh/your_key.pem
+bastion_public_ip: <The bastion host's IP>
+private_key_path: <The path to the private key file>
