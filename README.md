@@ -48,7 +48,7 @@ The project is organized into the following directory structure:
 - **Jenkinsfile**: Defines the pipeline for Jenkins, including stages for building and deploying the application.
 
 ## Setup Instructions
-
+### We can create a pipeline here with Jenkins. We can adjust it to our usecase, whether we want it to be triggered upon any commit to the original app repo to test it, or any other trigger. We can also make the deployment pipeline to be dependant on this pipeline.
 ### Step 1: Set up AWS Infrastructure with Terraform
 
 1. Clone the repository.
@@ -63,10 +63,10 @@ Apply the Terraform configuration to provision the required AWS resources:
    terraform apply --vars-file=dev.tfvars
    ```
 This will create:
-1-VPC with subnets.
-2-EC2 instances (public and private).
-3-NAT Gateway for outbound internet access from private instances.
-4-Security groups, route tables, and internet gateway for networking.
+1. VPC with subnets.
+2. EC2 instances (public and private).
+3. NAT Gateway for outbound internet access from private instances.
+4. Security groups, route tables, and internet gateway for networking.
 
 ### Step 2: Set up Jenkins Pipeline
 
